@@ -284,10 +284,14 @@ ISR(PCINT1_vect){
 	// Anti rebote
 	_delay_ms(500);
 	
-	// Alternar entre modos
-	if(actualExec == LETTERS){
-		actualExec = SCROLL;
-	}else{
-		actualExec = LETTERS;
+	if(!(PINC & (1 << PINC3)))
+	{
+		// Alternar entre modos
+		if(actualExec == LETTERS){
+			actualExec = SCROLL;
+			}else{
+			actualExec = LETTERS;
+		}	
 	}
+	
 }

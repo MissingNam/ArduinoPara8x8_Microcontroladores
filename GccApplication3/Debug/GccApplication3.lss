@@ -3,31 +3,31 @@ GccApplication3.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000198  00800100  00000676  0000070a  2**0
+  0 .data         00000198  00800100  0000067a  0000070e  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000676  00000000  00000000  00000094  2**1
+  1 .text         0000067a  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          0000000a  00800298  00800298  000008a2  2**0
+  2 .bss          0000000a  00800298  00800298  000008a6  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  000008a2  2**0
+  3 .comment      00000030  00000000  00000000  000008a6  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000008d4  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000008d8  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 000000c0  00000000  00000000  00000914  2**0
+  5 .debug_aranges 000000c0  00000000  00000000  00000918  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   000017c9  00000000  00000000  000009d4  2**0
+  6 .debug_info   000017c9  00000000  00000000  000009d8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000901  00000000  00000000  0000219d  2**0
+  7 .debug_abbrev 00000901  00000000  00000000  000021a1  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   0000099c  00000000  00000000  00002a9e  2**0
+  8 .debug_line   000009a2  00000000  00000000  00002aa2  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000001c8  00000000  00000000  0000343c  2**2
+  9 .debug_frame  000001c8  00000000  00000000  00003444  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000673  00000000  00000000  00003604  2**0
+ 10 .debug_str    000006c3  00000000  00000000  0000360c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000009d7  00000000  00000000  00003c77  2**0
+ 11 .debug_loc    000009d7  00000000  00000000  00003ccf  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 000000f8  00000000  00000000  0000464e  2**0
+ 12 .debug_ranges 000000f8  00000000  00000000  000046a6  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -72,7 +72,7 @@ Disassembly of section .text:
   74:	12 e0       	ldi	r17, 0x02	; 2
   76:	a0 e0       	ldi	r26, 0x00	; 0
   78:	b1 e0       	ldi	r27, 0x01	; 1
-  7a:	e6 e7       	ldi	r30, 0x76	; 118
+  7a:	ea e7       	ldi	r30, 0x7A	; 122
   7c:	f6 e0       	ldi	r31, 0x06	; 6
   7e:	02 c0       	rjmp	.+4      	; 0x84 <__do_copy_data+0x10>
   80:	05 90       	lpm	r0, Z+
@@ -95,7 +95,7 @@ Disassembly of section .text:
   96:	b2 07       	cpc	r27, r18
   98:	e1 f7       	brne	.-8      	; 0x92 <.do_clear_bss_loop>
   9a:	0e 94 f5 02 	call	0x5ea	; 0x5ea <main>
-  9e:	0c 94 39 03 	jmp	0x672	; 0x672 <_exit>
+  9e:	0c 94 3b 03 	jmp	0x676	; 0x676 <_exit>
 
 000000a2 <__bad_interrupt>:
   a2:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -1091,30 +1091,36 @@ ISR(PCINT1_vect){
 	// Anti rebote
 	_delay_ms(500);
 	
-	// Alternar entre modos
-	if(actualExec == LETTERS){
- 64e:	80 91 98 02 	lds	r24, 0x0298	; 0x800298 <__data_end>
- 652:	81 11       	cpse	r24, r1
- 654:	04 c0       	rjmp	.+8      	; 0x65e <__vector_4+0x32>
-		actualExec = SCROLL;
- 656:	81 e0       	ldi	r24, 0x01	; 1
- 658:	80 93 98 02 	sts	0x0298, r24	; 0x800298 <__data_end>
- 65c:	02 c0       	rjmp	.+4      	; 0x662 <__vector_4+0x36>
-	}else{
-		actualExec = LETTERS;
- 65e:	10 92 98 02 	sts	0x0298, r1	; 0x800298 <__data_end>
+	if(!(PINC & (1 << PINC3)))
+ 64e:	33 99       	sbic	0x06, 3	; 6
+ 650:	0a c0       	rjmp	.+20     	; 0x666 <__vector_4+0x3a>
+	{
+		// Alternar entre modos
+		if(actualExec == LETTERS){
+ 652:	80 91 98 02 	lds	r24, 0x0298	; 0x800298 <__data_end>
+ 656:	81 11       	cpse	r24, r1
+ 658:	04 c0       	rjmp	.+8      	; 0x662 <__vector_4+0x36>
+			actualExec = SCROLL;
+ 65a:	81 e0       	ldi	r24, 0x01	; 1
+ 65c:	80 93 98 02 	sts	0x0298, r24	; 0x800298 <__data_end>
+ 660:	02 c0       	rjmp	.+4      	; 0x666 <__vector_4+0x3a>
+			}else{
+			actualExec = LETTERS;
+ 662:	10 92 98 02 	sts	0x0298, r1	; 0x800298 <__data_end>
+		}	
 	}
- 662:	9f 91       	pop	r25
- 664:	8f 91       	pop	r24
- 666:	2f 91       	pop	r18
- 668:	0f 90       	pop	r0
- 66a:	0f be       	out	0x3f, r0	; 63
+	
+ 666:	9f 91       	pop	r25
+ 668:	8f 91       	pop	r24
+ 66a:	2f 91       	pop	r18
  66c:	0f 90       	pop	r0
- 66e:	1f 90       	pop	r1
- 670:	18 95       	reti
+ 66e:	0f be       	out	0x3f, r0	; 63
+ 670:	0f 90       	pop	r0
+ 672:	1f 90       	pop	r1
+ 674:	18 95       	reti
 
-00000672 <_exit>:
- 672:	f8 94       	cli
+00000676 <_exit>:
+ 676:	f8 94       	cli
 
-00000674 <__stop_program>:
- 674:	ff cf       	rjmp	.-2      	; 0x674 <__stop_program>
+00000678 <__stop_program>:
+ 678:	ff cf       	rjmp	.-2      	; 0x678 <__stop_program>
